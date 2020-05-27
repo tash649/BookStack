@@ -139,7 +139,7 @@
                             <p class="small">{!! trans('settings.app_primary_color_desc') !!}</p>
                         </div>
                         <div setting-app-color-picker class="text-m-right pt-xs">
-                            <input type="color" data-default="#206ea7" data-current="{{ setting('app-color') }}" value="{{ setting('app-color') }}" name="setting-app-color" id="setting-app-color" placeholder="#206ea7">
+                            <input type="color" data-default="#0e0b20" data-current="{{ setting('app-color') }}" value="{{ setting('app-color') }}" name="setting-app-color" id="setting-app-color" placeholder="#206ea7">
                             <input type="hidden" value="{{ setting('app-color-light') }}" name="setting-app-color-light" id="setting-app-color-light">
                             <div class="pr-s">
                                 <button type="button" class="text-button text-muted mt-s" setting-app-color-picker-default>{{ trans('common.default') }}</button>

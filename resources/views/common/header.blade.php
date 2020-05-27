@@ -6,9 +6,6 @@
                 @if(setting('app-logo', '') !== 'none')
                     <img class="logo-image" src="{{ setting('app-logo', '') === '' ? url('/logo.png') : url(setting('app-logo', '')) }}" alt="Logo">
                 @endif
-                @if (setting('app-name-header'))
-                    <span class="logo-text">{{ setting('app-name') }}</span>
-                @endif
             </a>
             <div class="mobile-menu-toggle hide-over-l">@icon('more')</div>
         </div>
@@ -40,13 +37,6 @@
                             <a href="{{ url('/settings/users') }}">@icon('users'){{ trans('settings.users') }}</a>
                         @endif
                     @endif
-
-                    @if(!signedInUser())
-                        @if(setting('registration-enabled') && config('auth.method') === 'standard')
-                            <a href="{{ url('/register') }}">@icon('new-user'){{ trans('auth.sign_up') }}</a>
-                        @endif
-                        <a href="{{ url('/login')  }}">@icon('login'){{ trans('auth.log_in') }}</a>
-                    @endif
                 </div>
                 @if(signedInUser())
                     <?php $currentUser = user(); ?>
@@ -62,17 +52,6 @@
                             </li>
                             <li>
                                 <a href="{{ url("/settings/users/{$currentUser->id}") }}">@icon('edit'){{ trans('common.edit_profile') }}</a>
-                            </li>
-                            <li>
-                                @if(config('auth.method') === 'saml2')
-                                    <a href="{{ url('/saml2/logout') }}">@icon('logout'){{ trans('auth.logout') }}</a>
-                                @else
-                                    <a href="{{ url('/logout') }}">@icon('logout'){{ trans('auth.logout') }}</a>
-                                @endif
-                            </li>
-                            <li><hr></li>
-                            <li>
-                                @include('partials.dark-mode-toggle')
                             </li>
                         </ul>
                     </div>

@@ -1,4 +1,14 @@
-FROM php:7.3-apache
+FROM php:7.1-apache
+
+RUN pecl install xdebug-2.5.0 \
+   && docker-php-ext-enable xdebug
+
+RUN echo xdebug.remote_enable=1 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo xdebug.remote_port=9000 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo xdebug.remote_autostart=1 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo xdebug.remote_connect_back=0 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo xdebug.idekey=PHP_STORM >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo xdebug.remote_host=172.18.0.1 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 ENV APACHE_DOCUMENT_ROOT /app/public
 WORKDIR /app
