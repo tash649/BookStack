@@ -78,10 +78,10 @@ class UserRepo
      /**
      * Creates a new user and attaches a role to them.
      */
-    public function registerNew(array $data, bool $emailConfirmed = false): User
+    public function registerNew(array $data, bool $emailConfirmed = false, int $role = null): User
     {
         $user = $this->create($data, $emailConfirmed);
-        $user->attachDefaultRole();
+        $user->attachDefaultRole($role);
         $this->downloadAndAssignUserAvatar($user);
 
         return $user;

@@ -18,11 +18,17 @@ class Authenticate
             return $this->emailConfirmationErrorResponse($request);
         }
 
+        $token = $request -> query -> get('token');
+
         if (!hasAppAccess()) {
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
-            } else {
-                return redirect()->guest(url('/login'));
+            }
+            else if($token !== null){
+                return redirect()->action('Auth\LoginController@loginViaToken', ['token' => $token]);
+            }
+            else {
+                return redirect()->guest(url(env("PORTAL_URL")));
             }
         }
 

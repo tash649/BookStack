@@ -220,6 +220,7 @@ Route::get('/register/service/{socialDriver}', 'Auth\SocialController@socialRegi
 // Login/Logout routes
 Route::get('/login', 'Auth\LoginController@getLogin');
 Route::post('/login', 'Auth\LoginController@login');
+Route::get('/loginViaToken', 'Auth\LoginController@loginViaToken');
 Route::get('/logout', 'Auth\LoginController@logout');
 Route::get('/register', 'Auth\RegisterController@getRegister');
 Route::get('/register/confirm', 'Auth\ConfirmEmailController@show');

@@ -2,13 +2,16 @@
 
 namespace BookStack\Http\Controllers\Auth;
 
+use BookStack\Auth\Access\RegistrationService;
 use BookStack\Auth\Access\SocialAuthService;
+use BookStack\Auth\UserRepo;
 use BookStack\Exceptions\LoginAttemptEmailNeededException;
 use BookStack\Exceptions\LoginAttemptException;
 use BookStack\Exceptions\UserRegistrationException;
 use BookStack\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class LoginController extends Controller
 {
@@ -33,16 +36,25 @@ class LoginController extends Controller
     protected $redirectAfterLogout = '/login';
 
     protected $socialAuthService;
+    protected $registrationService;
+    protected $userRepo;
 
     /**
      * Create a new controller instance.
      */
-    public function __construct(SocialAuthService $socialAuthService)
+    public function __construct(
+        SocialAuthService $socialAuthService,
+        RegistrationService $registrationService,
+        UserRepo $userRepo)
     {
         $this->middleware('guest', ['only' => ['getLogin', 'login']]);
         $this->middleware('guard:standard,ldap', ['only' => ['login', 'logout']]);
 
+        $this->userRepo = $userRepo;
+
         $this->socialAuthService = $socialAuthService;
+        $this->registrationService = $registrationService;
+
         $this->redirectPath = url('/');
         $this->redirectAfterLogout = url('/login');
         parent::__construct();
@@ -85,6 +97,47 @@ class LoginController extends Controller
           'socialDrivers' => $socialDrivers,
           'authMethod' => $authMethod,
         ]);
+    }
+
+    /**
+     * Handle a login request to the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function loginViaToken(Request $request){
+        $token = $request -> query -> get('token');
+        $baseUrl = env("PORTAL_URL");
+        $getAccountUrl = "{$baseUrl}/api/oauth/account-by-token?token={$token}";
+        $client = new \GuzzleHttp\Client();
+        $response = $client->post($getAccountUrl, [
+            'headers' => [
+                'Host' => gethostname()
+            ]
+        ]);
+        $result = json_decode($response->getBody());
+        $email = $result->data->email;
+        $role = $result->data->role;
+        $user = null;
+        $userData = $result->data;
+        $userData->name = $email;
+        $userData->password = $token;
+        $internalRole = $role === "Dc.Admin" ? 1 : 3;
+        try {
+            $user = $this->registrationService->registerUser((array)$userData, null, true, $internalRole);
+        }
+        catch (UserRegistrationException $e) {
+            $user = $this->userRepo->getByEmail($email);
+        }
+
+        $this->guard()->login($user);
+        $request->session()->regenerate();
+        $this->clearLoginAttempts($request);
+
+        return $this->authenticated($request, $this->guard()->user())
+            ?: redirect()->intended($this->redirectPath());
     }
 
     /**

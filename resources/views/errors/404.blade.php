@@ -11,9 +11,6 @@
                 <p>{{ trans('errors.sorry_page_not_found_permission_warning') }}</p>
             </div>
             <div class="text-right">
-                @if(!signedInUser())
-                    <a href="{{ url('/login') }}" class="button outline">{{ trans('auth.log_in') }}</a>
-                @endif
                 <a href="{{ url('/') }}" class="button outline">{{ trans('errors.return_home') }}</a>
             </div>
         </div>

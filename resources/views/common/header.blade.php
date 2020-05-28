@@ -53,6 +53,9 @@
                             <li>
                                 <a href="{{ url("/settings/users/{$currentUser->id}") }}">@icon('edit'){{ trans('common.edit_profile') }}</a>
                             </li>
+                            <li>
+                                <a href="{{ url('/logout') }}">@icon('logout'){{ trans('auth.logout') }}</a>
+                            </li>
                         </ul>
                     </div>
                 @endif

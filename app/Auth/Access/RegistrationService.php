@@ -47,7 +47,7 @@ class RegistrationService
      * The registrations flow for all users.
      * @throws UserRegistrationException
      */
-    public function registerUser(array $userData, ?SocialAccount $socialAccount = null, bool $emailConfirmed = false): User
+    public function registerUser(array $userData, ?SocialAccount $socialAccount = null, bool $emailConfirmed = false, int $role = null): User
     {
         $userEmail = $userData['email'];
 
@@ -61,7 +61,7 @@ class RegistrationService
         }
 
         // Create the user
-        $newUser = $this->userRepo->registerNew($userData, $emailConfirmed);
+        $newUser = $this->userRepo->registerNew($userData, $emailConfirmed, $role);
 
         // Assign social account if given
         if ($socialAccount) {
